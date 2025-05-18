@@ -1,0 +1,29 @@
+# --- Node (React frontend) ---
+frontend/node_modules/
+frontend/build/
+frontend/.env
+frontend/.DS_Store
+
+# --- Java (Spring Boot backend) ---
+backend/target/
+backend/.classpath
+backend/.project
+backend/.settings/
+backend/.env
+*.log
+
+# --- IntelliJ IDEA / Eclipse ---
+*.iml
+.idea/
+*.ipr
+*.iws
+.vscode/
+
+# --- OS Files ---
+.DS_Store
+Thumbs.db
+
+# --- Other ---
+*.bak
+*.swp
+*.tmp
