@@ -26,20 +26,29 @@ A full-stack web application built with **React** and **Spring Boot** for managi
 ## 🚀 Getting Started
 
 🖥️ Frontend (React + Vite)
-Navigate to the frontend/ directory:
+Prerequisites
+Ensure you have Node.js (version 12.2.0 or higher) installed on your machine.
+
+Getting Started
+Navigate to the frontend directory:
 
 bash
+Copy
+Edit
 cd frontend
 Install dependencies:
 
 bash
+Copy
+Edit
 npm install
 Start the development server:
 
 bash
+Copy
+Edit
 npm run dev
-The app will open automatically at:
-http://localhost:5173 (Vite’s default port).
+By default, the application will be accessible at http://localhost:5173.
 
 ### ☕ Backend (Spring Boot)
 
