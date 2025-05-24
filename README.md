@@ -25,12 +25,21 @@ A full-stack web application built with **React** and **Spring Boot** for managi
 
 ## 🚀 Getting Started
 
-### 🖥️ Frontend (React)
+🖥️ Frontend (React + Vite)
+Navigate to the frontend/ directory:
 
-1. Navigate to the `frontend/` directory and install dependencies.
-2. Run the development server to start the frontend application.
+bash
+cd frontend
+Install dependencies:
 
-The frontend will be available at `http://localhost:3000`.
+bash
+npm install
+Start the development server:
+
+bash
+npm run dev
+The app will open automatically at:
+http://localhost:5173 (Vite’s default port).
 
 ### ☕ Backend (Spring Boot)
 
@@ -40,10 +49,4 @@ The frontend will be available at `http://localhost:3000`.
 
 ---
 
-## 🔐 Environment Variables
 
-Create a `.env` file in the `frontend/` directory to specify the API URL:
-
-**frontend/.env**
-```env
-REACT_APP_API_URL=http://localhost:8080/api
