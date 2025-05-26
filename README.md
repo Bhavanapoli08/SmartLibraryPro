@@ -9,7 +9,7 @@ A full-stack library management system that allows users to search, review, and 
 Secure login system with user/admin role-based access using Spring Security.
 
 **Login demo:**  
-![App Screenshot](https://res.cloudinary.com/dmdgp4yf9/image/upload/lzxqlnfwbalcnia4wzib)
+![App Screenshot](https://res.cloudinary.com/dmdgp4yf9/image/upload/v1748168372/auth.gif)
 
 ### Book Search & Pagination
 Users can search books with responsive pagination support.
