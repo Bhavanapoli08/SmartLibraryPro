@@ -34,3 +34,54 @@ Users can submit and view reviews for books.
 
 **Review Demo:**  
 ![App Screenshot](https://res.cloudinary.com/dmdgp4yf9/image/upload/v1748239469/library%20project/reviews.gif)
+
+
+## 📦 Installation
+
+### 🔧 Backend (Spring Boot)
+
+1. Clone the repository.
+2. Open the project in your IDE (e.g., IntelliJ, Eclipse).
+3. Update the `application.properties` file with your MySQL database credentials.
+4. Run the Spring Boot application.
+
+### 💻 Frontend (React)
+
+1. Navigate to the frontend directory.
+2. Install dependencies and start the development server:
+
+   ```bash
+   npm install
+   npm run dev
+
+## 🛠️ Tech Stack
+
+### 🧩 Frontend
+- React  
+- React Router  
+- JavaScript Fetch API  
+- Bootstrap
+
+### 🔧 Backend
+- Java  
+- Spring Boot  
+- Spring REST (Spring MVC)  
+- Spring Security  
+- Spring Data JPA
+
+### 🗄️ Database
+- MySQL
+
+### 🛠️ Tools Used
+- Visual Studio Code  
+- IntelliJ IDEA  
+- Postman
+
+
+## 📬 Contact
+
+If you have any questions, suggestions, or feedback, feel free to reach out:
+
+- **Name**: Nadeem Afroz  
+- **Email**: nadeemafroz12@gmail.com  
+- **LinkedIn**: [linkedin.com/in/nadeem-afroz](https://www.linkedin.com/in/nadeem-afroz/)
