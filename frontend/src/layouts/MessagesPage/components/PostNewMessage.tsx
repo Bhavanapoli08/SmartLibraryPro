@@ -2,9 +2,8 @@ import { useState } from 'react';
 import MessageModel from '../../../models/MessageModel';
 
 export const PostNewMessage = () => {
-    // Temporary placeholders - replace with real auth tomorrow
-    const isAuthenticated = true;
-    
+    const token = localStorage.getItem('token');
+
     const [title, setTitle] = useState('');
     const [question, setQuestion] = useState('');
     const [displayWarning, setDisplayWarning] = useState(false);
@@ -12,20 +11,21 @@ export const PostNewMessage = () => {
 
     async function submitNewQuestion() {
         const url = `http://localhost:8080/api/messages/secure/add/message`;
-        if (isAuthenticated && title !== '' && question !== '') {
-            const messageRequestModel: MessageModel = new MessageModel(title, question);
+
+        if (token && title.trim() !== '' && question.trim() !== '') {
+            const messageRequestModel = new MessageModel(title, question);
             const requestOptions = {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
-                    // Add authorization header tomorrow
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(messageRequestModel)
             };
 
             try {
-                const submitNewQuestionResponse = await fetch(url, requestOptions);
-                if (!submitNewQuestionResponse.ok) {
+                const response = await fetch(url, requestOptions);
+                if (!response.ok) {
                     throw new Error('Something went wrong!');
                 }
 
@@ -36,60 +36,58 @@ export const PostNewMessage = () => {
             } catch (error) {
                 console.error('Error submitting question:', error);
                 setDisplayWarning(true);
+                setDisplaySuccess(false);
             }
         } else {
             setDisplayWarning(true);
             setDisplaySuccess(false);
         }
     }
-    
+
     return (
         <div className='card mt-3'>
             <div className='card-header'>
-                Ask question to Luv 2 Read Admin
+                Ask a Question to Luv 2 Read Admin
             </div>
             <div className='card-body'>
                 <form method='POST'>
-                    {displayWarning && 
+                    {displayWarning && (
                         <div className='alert alert-danger' role='alert'>
-                            {title === '' || question === '' 
-                                ? 'All fields must be filled out' 
+                            {title.trim() === '' || question.trim() === ''
+                                ? 'All fields must be filled out'
                                 : 'Failed to submit question'}
                         </div>
-                    }
-                    {displaySuccess && 
+                    )}
+                    {displaySuccess && (
                         <div className='alert alert-success' role='alert'>
                             Question added successfully
                         </div>
-                    }
+                    )}
                     <div className='mb-3'>
-                        <label className='form-label'>
-                            Title
-                        </label>
-                        <input 
-                            type='text' 
-                            className='form-control' 
-                            placeholder='Title' 
-                            onChange={e => setTitle(e.target.value)} 
+                        <label className='form-label'>Title</label>
+                        <input
+                            type='text'
+                            className='form-control'
+                            placeholder='Title'
+                            onChange={e => setTitle(e.target.value)}
                             value={title}
                         />
                     </div>
 
                     <div className='mb-3'>
-                        <label className='form-label'>
-                            Question
-                        </label>
-                        <textarea 
-                            className='form-control' 
-                            rows={3} 
-                            onChange={e => setQuestion(e.target.value)} 
+                        <label className='form-label'>Question</label>
+                        <textarea
+                            className='form-control'
+                            rows={3}
+                            onChange={e => setQuestion(e.target.value)}
                             value={question}
                         />
                     </div>
+
                     <div>
-                        <button 
-                            type='button' 
-                            className='btn btn-primary mt-3' 
+                        <button
+                            type='button'
+                            className='btn btn-primary mt-3'
                             onClick={submitNewQuestion}
                         >
                             Submit Question
@@ -99,4 +97,4 @@ export const PostNewMessage = () => {
             </div>
         </div>
     );
-}
+};

@@ -1,22 +1,17 @@
-import { Link, NavLink } from "react-router-dom";
-import { SpinnerLoading } from "../Utils/SpinnerLoading";
-import { useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { useEffect } from 'react';
 
 export const Navbar = () => {
-  // Temporary placeholder - replace tomorrow with real auth
-  const isAuthenticated = !!localStorage.getItem('token'); // All links visible for today
-  const isAdmin = true; // Admin link visible for today
+  const { isAuthenticated, isAdmin, email, logout } = useAuth();
   const navigate = useNavigate();
 
-  // Temporary placeholder - will implement tomorrow
   const handleLogout = () => {
-    // Clear authentication data
-    
-    localStorage.removeItem('token'); // Adjust the key as per your application
-    console.log('User logged out successfully');
-  
+    logout();
     navigate('/');
   };
+
+  
 
   return (
     <nav className='navbar navbar-expand-lg navbar-dark main-color py-3'>
@@ -25,8 +20,7 @@ export const Navbar = () => {
         <button className='navbar-toggler' type='button'
           data-bs-toggle='collapse' data-bs-target='#navbarNavDropdown'
           aria-controls='navbarNavDropdown' aria-expanded='false'
-          aria-label='Toggle Navigation'
-        >
+          aria-label='Toggle Navigation'>
           <span className='navbar-toggler-icon'></span>
         </button>
         <div className='collapse navbar-collapse' id='navbarNavDropdown'>
@@ -37,30 +31,30 @@ export const Navbar = () => {
             <li className='nav-item'>
               <NavLink className='nav-link' to='/search'>Search Books</NavLink>
             </li>
-            {isAuthenticated &&
+            {isAuthenticated && (
               <li className='nav-item'>
                 <NavLink className='nav-link' to='/shelf'>Shelf</NavLink>
               </li>
-            }
-            {isAuthenticated && isAdmin &&
+            )}
+            {isAuthenticated && isAdmin && (
               <li className='nav-item'>
                 <NavLink className='nav-link' to='/admin'>Admin</NavLink>
               </li>
-            }
+            )}
           </ul>
           <ul className='navbar-nav ms-auto'>
-            {!isAuthenticated ?
+            {!isAuthenticated ? (
               <li className='nav-item m-1'>
-                <Link type='button' className='btn btn-outline-light' to='/login'>Sign in</Link>
+                <Link className='btn btn-outline-light' to='/login'>Sign in</Link>
               </li>
-              :
-              <li>
+            ) : (
+              <li className='nav-item m-1'>
                 <button className='btn btn-outline-light' onClick={handleLogout}>Logout</button>
               </li>
-            }
+            )}
           </ul>
         </div>
       </div>
     </nav>
   );
-}
+};

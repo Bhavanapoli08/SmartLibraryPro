@@ -2,10 +2,8 @@ import { useState } from 'react';
 import AddBookRequest from '../../../models/AddBookRequest';
 
 export const AddNewBook = () => {
-    // Temporary placeholders - replace with real auth tomorrow
-    const isAdmin = true;
+    const token = localStorage.getItem('token');
 
-    // New Book
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');
     const [description, setDescription] = useState('');
@@ -13,7 +11,6 @@ export const AddNewBook = () => {
     const [category, setCategory] = useState('Category');
     const [selectedImage, setSelectedImage] = useState<any>(null);
 
-    // Displays
     const [displayWarning, setDisplayWarning] = useState(false);
     const [displaySuccess, setDisplaySuccess] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -29,55 +26,53 @@ export const AddNewBook = () => {
     }
 
     function getBase64(file: any) {
-        let reader = new FileReader();
+        const reader = new FileReader();
         reader.readAsDataURL(file);
-        reader.onload = function () {
-            setSelectedImage(reader.result);
-        };
-        reader.onerror = function (error) {
-            console.log('Error', error);
-        }
+        reader.onload = () => setSelectedImage(reader.result);
+        reader.onerror = (error) => console.error('Image conversion error:', error);
     }
 
     async function submitNewBook() {
         const url = `http://localhost:8080/api/admin/secure/add/book`;
-        if (isAdmin && title !== '' && author !== '' && category !== 'Category' 
-            && description !== '' && copies >= 0) {
-                setIsLoading(true);
-                try {
-                    const book: AddBookRequest = new AddBookRequest(title, author, description, copies, category);
-                    book.img = selectedImage;
-                    const requestOptions = {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                            // Add authorization header tomorrow
-                        },
-                        body: JSON.stringify(book)
-                    };
 
-                    const submitNewBookResponse = await fetch(url, requestOptions);
-                    if (!submitNewBookResponse.ok) {
-                        throw new Error('Something went wrong!');
-                    }
-                    setTitle('');
-                    setAuthor('');
-                    setDescription('');
-                    setCopies(0);
-                    setCategory('Category');
-                    setSelectedImage(null);
-                    setDisplayWarning(false);
-                    setDisplaySuccess(true);
-                } catch (error) {
-                    console.error('Error adding book:', error);
-                    setDisplayWarning(true);
-                } finally {
-                    setIsLoading(false);
-                }
-            } else {
+        if (title && author && category !== 'Category' && description && copies >= 0) {
+            setIsLoading(true);
+            try {
+                const book: AddBookRequest = new AddBookRequest(title, author, description, copies, category);
+                book.img = selectedImage;
+
+                const requestOptions = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(book)
+                };
+
+                const response = await fetch(url, requestOptions);
+                if (!response.ok) throw new Error('Failed to add book');
+
+                // Reset form
+                setTitle('');
+                setAuthor('');
+                setDescription('');
+                setCopies(0);
+                setCategory('Category');
+                setSelectedImage(null);
+                setDisplayWarning(false);
+                setDisplaySuccess(true);
+            } catch (error) {
+                console.error('Error adding book:', error);
                 setDisplayWarning(true);
                 setDisplaySuccess(false);
+            } finally {
+                setIsLoading(false);
             }
+        } else {
+            setDisplayWarning(true);
+            setDisplaySuccess(false);
+        }
     }
 
     return (
@@ -89,67 +84,62 @@ export const AddNewBook = () => {
             }
             {displayWarning && 
                 <div className='alert alert-danger' role='alert'>
-                    {!isAdmin ? 'Admin privileges required' : 'All fields must be filled out'}
+                    Please fill in all required fields correctly.
                 </div>
             }
+
             <div className='card'>
-                <div className='card-header'>
-                    Add a new book
-                </div>
+                <div className='card-header'>Add a new book</div>
                 <div className='card-body'>
-                    <form method='POST'>
-                        <div className='row'>
-                            <div className='col-md-6 mb-3'>
-                                <label className='form-label'>Title</label>
-                                <input type="text" className='form-control' name='title' required 
-                                    onChange={e => setTitle(e.target.value)} value={title} />
-                            </div>
-                            <div className='col-md-3 mb-3'>
-                                <label className='form-label'>Author</label>
-                                <input type="text" className='form-control' name='author' required 
-                                    onChange={e => setAuthor(e.target.value)} value={author}/>
-                            </div>
-                            <div className='col-md-3 mb-3'>
-                                <label className='form-label'>Category</label>
-                                <button className='form-control btn btn-secondary dropdown-toggle' type='button' 
-                                    id='dropdownMenuButton1' data-bs-toggle='dropdown' aria-expanded='false'>
-                                        {category}
-                                </button>
-                                <ul id='addNewBookId' className='dropdown-menu' aria-labelledby='dropdownMenuButton1'>
-                                    <li><a onClick={() => categoryField('FE')} className='dropdown-item'>Front End</a></li>
-                                    <li><a onClick={() => categoryField('BE')} className='dropdown-item'>Back End</a></li>
-                                    <li><a onClick={() => categoryField('Data')} className='dropdown-item'>Data</a></li>
-                                    <li><a onClick={() => categoryField('DevOps')} className='dropdown-item'>DevOps</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div className='col-md-12 mb-3'>
-                            <label className='form-label'>Description</label>
-                            <textarea className='form-control' id='exampleFormControlTextarea1' rows={3} 
-                                onChange={e => setDescription(e.target.value)} value={description}></textarea>
+                    <div className='row'>
+                        <div className='col-md-6 mb-3'>
+                            <label className='form-label'>Title</label>
+                            <input type='text' className='form-control' required
+                                onChange={e => setTitle(e.target.value)} value={title} />
                         </div>
                         <div className='col-md-3 mb-3'>
-                            <label className='form-label'>Copies</label>
-                            <input type='number' className='form-control' name='Copies' required 
-                                onChange={e => setCopies(Number(e.target.value))} value={copies}/>
+                            <label className='form-label'>Author</label>
+                            <input type='text' className='form-control' required
+                                onChange={e => setAuthor(e.target.value)} value={author} />
                         </div>
-                        <div className='mb-3'>
-                            <label className='form-label'>Book Cover</label>
-                            <input type='file' className='form-control' onChange={e => base64ConversionForImages(e)}/>
-                        </div>
-                        <div>
-                            <button 
-                                type='button' 
-                                className='btn btn-primary mt-3' 
-                                onClick={submitNewBook}
-                                disabled={isLoading}
-                            >
-                                {isLoading ? 'Adding...' : 'Add Book'}
+                        <div className='col-md-3 mb-3'>
+                            <label className='form-label'>Category</label>
+                            <button className='form-control btn btn-secondary dropdown-toggle' type='button'
+                                data-bs-toggle='dropdown' aria-expanded='false'>
+                                {category}
                             </button>
+                            <ul className='dropdown-menu'>
+                                <li><a onClick={() => categoryField('FE')} className='dropdown-item'>Front End</a></li>
+                                <li><a onClick={() => categoryField('BE')} className='dropdown-item'>Back End</a></li>
+                                <li><a onClick={() => categoryField('Data')} className='dropdown-item'>Data</a></li>
+                                <li><a onClick={() => categoryField('DevOps')} className='dropdown-item'>DevOps</a></li>
+                            </ul>
                         </div>
-                    </form>
+                    </div>
+                    <div className='mb-3'>
+                        <label className='form-label'>Description</label>
+                        <textarea className='form-control' rows={3}
+                            onChange={e => setDescription(e.target.value)} value={description}></textarea>
+                    </div>
+                    <div className='col-md-3 mb-3'>
+                        <label className='form-label'>Copies</label>
+                        <input type='number' className='form-control' required
+                            onChange={e => setCopies(Number(e.target.value))} value={copies} />
+                    </div>
+                    <div className='mb-3'>
+                        <label className='form-label'>Book Cover</label>
+                        <input type='file' className='form-control' onChange={base64ConversionForImages} />
+                    </div>
+                    <button 
+                        type='button'
+                        className='btn btn-primary mt-3'
+                        onClick={submitNewBook}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Adding...' : 'Add Book'}
+                    </button>
                 </div>
             </div>
         </div>
     );
-}
+};

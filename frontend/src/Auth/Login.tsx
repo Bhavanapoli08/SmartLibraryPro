@@ -2,8 +2,10 @@ import React, { useState, FormEvent, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Container, Row, Col, Card, Alert, Tabs, Tab } from 'react-bootstrap';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext'; // 👈 Adjust this path if needed
 
 const Login: React.FC = () => {
+  const { login } = useAuth(); // 👈 use context login
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -13,14 +15,11 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if the user is already logged in
     const token = localStorage.getItem('token');
     if (token) {
-      // Redirect to homepage if logged in
-      navigate('/');
+      navigate('/'); // Redirect if already logged in
     }
   }, [navigate]);
-
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -29,7 +28,6 @@ const Login: React.FC = () => {
 
     try {
       if (activeTab === 'register') {
-        // Registration logic
         if (password !== confirmPassword) {
           throw new Error("Passwords don't match");
         }
@@ -42,16 +40,13 @@ const Login: React.FC = () => {
         setSuccess('Registration successful! Please login.');
         setActiveTab('login');
       } else {
-        // Login logic
         const response = await axios.post('http://localhost:8080/api/auth/login', {
           email,
           password
         });
 
         const token = response.data;
-        localStorage.setItem('token', token);
-        
-        // Redirect to dashboard or home page
+        login(token); // 👈 update context
         navigate('/');
       }
     } catch (err: any) {
@@ -78,7 +73,7 @@ const Login: React.FC = () => {
                   <Form onSubmit={handleSubmit}>
                     {error && <Alert variant="danger">{error}</Alert>}
                     {success && <Alert variant="success">{success}</Alert>}
-                    
+
                     <Form.Group className="mb-3">
                       <Form.Label>Email address</Form.Label>
                       <Form.Control
@@ -110,7 +105,7 @@ const Login: React.FC = () => {
                 <Tab eventKey="register" title="Register">
                   <Form onSubmit={handleSubmit}>
                     {error && <Alert variant="danger">{error}</Alert>}
-                    
+
                     <Form.Group className="mb-3">
                       <Form.Label>Email address</Form.Label>
                       <Form.Control
