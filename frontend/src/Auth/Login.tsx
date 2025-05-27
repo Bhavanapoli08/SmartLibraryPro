@@ -32,10 +32,10 @@ const Login: React.FC = () => {
           throw new Error("Passwords don't match");
         }
 
-        const response = await axios.post('http://localhost:8080/api/auth/register', {
-          email,
-          password
-        });
+        // const response = await axios.post('http://localhost:8080/api/auth/register', {
+        //   email,
+        //   password
+        // });
 
         setSuccess('Registration successful! Please login.');
         setActiveTab('login');

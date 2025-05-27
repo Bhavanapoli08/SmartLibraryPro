@@ -7,6 +7,7 @@ import { CheckoutAndReviewBox } from "./CheckoutAndReviewBox";
 import { LatestReviews } from "./LatestReviews";
 import ReviewRequestModel from "../../models/ReviewRequestModel";
 import { SpinnerLoading } from "../Utils/SpinnerLoading";
+import bookImage from './../../Images/BooksImages/book-luv2code-1000.png';
 
 export const BookCheckoutPage = () => {
     const [book, setBook] = useState<BookModel>();
@@ -245,7 +246,7 @@ export const BookCheckoutPage = () => {
                             <img src={book.img} width="226" height="349" alt="Book" />
                         ) : (
                             <img
-                                src={import('./../../Images/BooksImages/book-luv2code-1000.png')}
+                                src={bookImage}
                                 width="226"
                                 height="349"
                                 alt="Book"
@@ -282,7 +283,7 @@ export const BookCheckoutPage = () => {
                         <img src={book.img} width="226" height="349" alt="Book" />
                     ) : (
                         <img
-                            src={import('./../../Images/BooksImages/book-luv2code-1000.png')}
+                            src={bookImage}
                             width="226"
                             height="349"
                             alt="Book"

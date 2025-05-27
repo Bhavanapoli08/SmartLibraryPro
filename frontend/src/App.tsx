@@ -14,7 +14,7 @@ import  Login  from './Auth/Login'
 import { JSX } from 'react';
 
 export default function App() {
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   // TODO: Implement security later
   const isAuthenticated = true; // Placeholder - replace with actual auth check
