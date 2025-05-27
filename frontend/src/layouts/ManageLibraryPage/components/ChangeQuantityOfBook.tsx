@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import BookModel from "../../../models/BookModel";
 
-export const ChangeQuantityOfBook: React.FC<{ book: BookModel, deleteBook: any }> = (props, key) => {
+export const ChangeQuantityOfBook: React.FC<{ book: BookModel, deleteBook: any }> = (props) => {
     const [quantity, setQuantity] = useState<number>(0);
     const [remaining, setRemaining] = useState<number>(0);
     const [isLoading, setIsLoading] = useState(false);
