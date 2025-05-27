@@ -1,19 +1,21 @@
 import { useState } from "react";
 import MessageModel from "../../../models/MessageModel";
 
-export const AdminMessage: React.FC<{ message: MessageModel, 
-    submitResponseToQuestion: any }> = (props, key) => {
+export const AdminMessage: React.FC<{ 
+    message: MessageModel, 
+    submitResponseToQuestion: (id: number, response: string) => void 
+}> = (props) => {  // Remove the 'key' parameter here
 
     const [displayWarning, setDisplayWarning] = useState(false);
     const [response, setResponse] = useState('');
 
     function submitBtn() {
-        if (props.message.id !== null && response !== '') {
-            props.submitResponseToQuestion(props.message.id, response);
-            setDisplayWarning(false);
-        } else {
-            setDisplayWarning(true);
-        }
+    if (props.message.id !== undefined && response !== '') {
+        props.submitResponseToQuestion(props.message.id, response);
+        setDisplayWarning(false);
+    } else {
+        setDisplayWarning(true);
+    }
     }
 
     return (
