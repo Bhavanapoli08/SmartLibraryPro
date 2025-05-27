@@ -6,7 +6,7 @@ import { SpinnerLoading } from '../../Utils/SpinnerLoading';
 
 export const HistoryPage = () => {
     const [isLoadingHistory, setIsLoadingHistory] = useState(true);
-    const [httpError, setHttpError] = useState(null);
+    const [httpError, setHttpError] = useState<string | null>(null);
     const [histories, setHistories] = useState<HistoryModel[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
