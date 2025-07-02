@@ -1,68 +1,63 @@
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom'; // ✅ Proper routing param
 import ReviewModel from '../../../models/ReviewModel';
 import { Pagination } from '../../Utils/Pagination';
 import { Review } from '../../Utils/Review';
 import { SpinnerLoading } from '../../Utils/SpinnerLoading';
 
 export const ReviewListPage = () => {
+    const { bookId } = useParams(); // ✅ Get bookId from route
 
     const [reviews, setReviews] = useState<ReviewModel[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [httpError, setHttpError] = useState(null);
-    
+    const [httpError, setHttpError] = useState<string | null>(null);
+
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
     const [reviewsPerPage] = useState(5);
     const [totalAmountOfReviews, setTotalAmountOfReviews] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
 
-    // Book to lookup reviews
-    const bookId = (window.location.pathname).split('/')[2];
-
     useEffect(() => {
         const fetchBookReviewsData = async () => {
+            if (!bookId) return;
 
-            const reviewUrl: string = `http://localhost:8080/api/reviews/search/findByBookId?bookId=${bookId}&page=${currentPage - 1}&size=${reviewsPerPage}`;
+            try {
+                const reviewUrl = `http://localhost:8080/api/reviews/search/findByBookId?bookId=${bookId}&page=${currentPage - 1}&size=${reviewsPerPage}`;
+                const responseReviews = await fetch(reviewUrl);
 
-            const responseReviews = await fetch(reviewUrl);
+                if (!responseReviews.ok) {
+                    throw new Error('Something went wrong while fetching reviews!');
+                }
 
-            if (!responseReviews.ok) {
-                throw new Error('Something went wrong!');
+                const responseJsonReviews = await responseReviews.json();
+                const responseData = responseJsonReviews._embedded.reviews;
+
+                setTotalAmountOfReviews(responseJsonReviews.page.totalElements);
+                setTotalPages(responseJsonReviews.page.totalPages);
+
+                const loadedReviews: ReviewModel[] = responseData.map((review: any) => ({
+                    id: review.id,
+                    userEmail: review.userEmail,
+                    date: review.date,
+                    rating: review.rating,
+                    book_id: review.book_id,
+                    reviewDescription: review.reviewDescription,
+                }));
+
+                setReviews(loadedReviews);
+                setIsLoading(false);
+            } catch (error: any) {
+                setIsLoading(false);
+                setHttpError(error.message);
             }
-
-            const responseJsonReviews = await responseReviews.json();
-
-            const responseData = responseJsonReviews._embedded.reviews;
-
-            setTotalAmountOfReviews(responseJsonReviews.page.totalElements);
-            setTotalPages(responseJsonReviews.page.totalPages);
-
-            const loadedReviews: ReviewModel[] = [];
-
-            for (const key in responseData) {
-                loadedReviews.push({
-                    id: responseData[key].id,
-                    userEmail: responseData[key].userEmail,
-                    date: responseData[key].date,
-                    rating: responseData[key].rating,
-                    book_id: responseData[key].book_id,
-                    reviewDescription: responseData[key].reviewDescription,
-                });
-            }
-
-            setReviews(loadedReviews);
-            setIsLoading(false);
         };
-        fetchBookReviewsData().catch((error: any) => {
-            setIsLoading(false);
-            setHttpError(error.message);
-        })
-    }, [currentPage]);
+
+        fetchBookReviewsData();
+    }, [currentPage, bookId]);
 
     if (isLoading) {
-        return (
-            <SpinnerLoading />
-        )
+        return <SpinnerLoading />;
     }
 
     if (httpError) {
@@ -73,20 +68,16 @@ export const ReviewListPage = () => {
         );
     }
 
-
     const indexOfLastReview: number = currentPage * reviewsPerPage;
     const indexOfFirstReview: number = indexOfLastReview - reviewsPerPage;
-
-    let lastItem = reviewsPerPage * currentPage <= totalAmountOfReviews ? 
-            reviewsPerPage * currentPage : totalAmountOfReviews;
+    const lastItem = Math.min(indexOfLastReview, totalAmountOfReviews);
 
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
-
 
     return (
         <div className="container mt-5">
             <div>
-                <h3>Comments: ({reviews.length})</h3>
+                <h3>Comments: ({totalAmountOfReviews})</h3>
             </div>
             <p>
                 {indexOfFirstReview + 1} to {lastItem} of {totalAmountOfReviews} items:
@@ -96,8 +87,13 @@ export const ReviewListPage = () => {
                     <Review review={review} key={review.id} />
                 ))}
             </div>
-
-            {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} paginate={paginate} />}
+            {totalPages > 1 && (
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    paginate={paginate}
+                />
+            )}
         </div>
     );
-}
+};
